@@ -1,0 +1,62 @@
+@page "/tasks"
+@inject HttpClient Http
+
+<PageTitle>Tasks</PageTitle>
+
+<h1>Task List</h1>
+
+<p>This component fetches task data from the API.</p>
+
+@if (tasks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Priority</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in tasks)
+            {
+                <tr>
+                    <td>@task.Title</td>
+                    <td>@task.Description</td>
+                    <td>@task.Priority</td>
+                    <td>@task.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private TaskModel[]? tasks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            tasks = await Http.GetFromJsonAsync<TaskModel[]>("https://localhost:5001/api/Tasks");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching tasks: {ex.Message}");
+        }
+    }
+
+    public class TaskModel
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Priority { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+    }
+}
